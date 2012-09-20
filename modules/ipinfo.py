@@ -17,8 +17,6 @@ def ping(phenny, input):
 		host = input.group(2)
 		ping_interval = "0.5"
 		
-		print "Ping issued for host %s" % host
-		
 		responses = []
 		ping = subprocess.Popen(["ping", "-c", "4", "-i", ping_interval, host], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 		out, error = ping.communicate()
@@ -64,7 +62,6 @@ def ping(phenny, input):
 		phenny.say("Statistics: min %s, avg %s, max %s, mdev %s, packet loss %s%%" % (pmin, pavg, pmax, pmdev, packetloss))
 	except:
 		phenny.say("Ping failed. Are you sure you specified a valid hostname or IP?")
-		raise
 	
 ping.commands = ['ping']
 ping.priority = 'medium'
@@ -92,66 +89,66 @@ def lookup(phenny, input):
 			
 		except:
 			phenny.say("Could not look up IP. Either you specified an invalid IP, or IP-API is down.")
-			raise
 	else:
-		dig = subprocess.Popen(["dig", "any", host], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-		out, error = dig.communicate()
-		
-		records = {
-			"A": [],
-			"AAAA": [],
-			"MX": [],
-			"TXT": [],
-			"SPF": [],
-			"NS": [],
-			"SOA": [],
-			"CNAME": []
-		}
-		
-		for line in out.splitlines():
-			if line.startswith(";"):
-				pass
-			elif line.strip() == "":
-				pass
-			else:
-				parts = re.split("\s+", line)
-				
-				try:
-					records[parts[3]].append(" ".join(parts[4:]))
-				except:
+		try:
+			dig = subprocess.Popen(["dig", "any", host], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+			out, error = dig.communicate()
+			
+			records = {
+				"A": [],
+				"AAAA": [],
+				"MX": [],
+				"TXT": [],
+				"SPF": [],
+				"NS": [],
+				"SOA": [],
+				"CNAME": []
+			}
+			
+			for line in out.splitlines():
+				if line.startswith(";"):
 					pass
-		
-		phenny.say("DNS records for %s:" % host)
-		
-		if len(records["SOA"]) > 0:
-			for record in records["SOA"]:
-				phenny.say("SOA: %s" % record)
+				elif line.strip() == "":
+					pass
+				else:
+					parts = re.split("\s+", line)
+					
+					try:
+						records[parts[3]].append(" ".join(parts[4:]))
+					except:
+						pass
 			
-		if len(records["NS"]) > 0:
-			phenny.say("NS: %s" % ", ".join(records["NS"]))
-		
-		if len(records["CNAME"]) > 0:
-			phenny.say("CNAME : %s" % ", ".join(records["CNAME"]))
+			phenny.say("DNS records for %s:" % host)
 			
-		if len(records["A"]) > 0:
-			phenny.say("A: %s" % ", ".join(records["A"]))
-		
-		if len(records["AAAA"]) > 0:
-			phenny.say("AAAA: %s" % ", ".join(records["AAAA"]))
-		
-		if len(records["MX"]) > 0:
-			phenny.say("MX: %s" % ", ".join(records["MX"]))
-		
-		if len(records["TXT"]) > 0:
-			for record in records["TXT"]:
-				phenny.say("TXT: %s" % record)
-		
-		if len(records["SPF"]) > 0:
-			for record in records["SPF"]:
-				phenny.say("SPF: %s" % record)
-		
-		
-		
+			if len(records["SOA"]) > 0:
+				for record in records["SOA"]:
+					phenny.say("SOA: %s" % record)
+				
+			if len(records["NS"]) > 0:
+				phenny.say("NS: %s" % ", ".join(records["NS"]))
+			
+			if len(records["CNAME"]) > 0:
+				phenny.say("CNAME : %s" % ", ".join(records["CNAME"]))
+				
+			if len(records["A"]) > 0:
+				phenny.say("A: %s" % ", ".join(records["A"]))
+			
+			if len(records["AAAA"]) > 0:
+				phenny.say("AAAA: %s" % ", ".join(records["AAAA"]))
+			
+			if len(records["MX"]) > 0:
+				phenny.say("MX: %s" % ", ".join(records["MX"]))
+			
+			if len(records["TXT"]) > 0:
+				for record in records["TXT"]:
+					phenny.say("TXT: %s" % record)
+			
+			if len(records["SPF"]) > 0:
+				for record in records["SPF"]:
+					phenny.say("SPF: %s" % record)
+		except:
+			phenny.say("Could not look up hostname. Are you sure it exists?")
+			
 lookup.commands = ['lookup']
 lookup.priority = 'medium'
 lookup.example = ".lookup 8.8.8.8"
