@@ -54,10 +54,17 @@ def ping(phenny, input):
 						'host': responding_host,
 						'time': ms
 					})
-			
-		phenny.say("min %s, avg %s, max %s, mdev %s, packet loss %s" % (pmin, pavg, pmax, pmdev, packetloss))
+		
+		response_times = []
+		
+		for response in responses:
+			response_times.append("%gms" % response["time"])
+		
+		phenny.say("Response times: %s" % ", ".join(response_times))
+		phenny.say("Statistics: min %s, avg %s, max %s, mdev %s, packet loss %s%%" % (pmin, pavg, pmax, pmdev, packetloss))
 	except:
 		phenny.say("Ping failed. Are you sure you specified a valid hostname or IP?")
+		raise
 	
 ping.commands = ['ping']
 ping.priority = 'medium'
