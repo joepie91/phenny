@@ -68,10 +68,10 @@ def lookup(phenny, input):
 		ip = input.group(2)
 		data = json.loads(urllib.urlopen("http://ip-api.com/json/%s" % ip).read())
 		
-		if data['as'] == None:
-			data['as'] = "Unknown AS"
-		
 		if data['status'] == "success":
+			if data['as'] == None:
+				data['as'] = "Unknown AS"
+				
 			phenny.say("IP: %s (%s)" % (ip, data['reverse']))
 			phenny.say("Location: %s, %s, %s (%s)" % (data['city'], data['regionName'], data['country'], data['countryCode']))
 			phenny.say("ISP: %s" % data['isp'])
