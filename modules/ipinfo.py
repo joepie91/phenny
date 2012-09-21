@@ -10,7 +10,14 @@ donate something, even if just a little, have a look on my donation page
 over at http://cryto.net/~joepie91/donate.html - Thanks!
 """
 
-import subprocess, json, urllib, re
+import subprocess, json, urllib, re, sys
+
+try:
+	import pythonwhois
+	whois_available = True
+except ImportError, e:
+	print "WARNING: pythonwhois module not found, .whois command is not available"
+	whois_available = False
 
 def ping(phenny, input):
 	try:
@@ -152,3 +159,44 @@ def lookup(phenny, input):
 lookup.commands = ['lookup']
 lookup.priority = 'medium'
 lookup.example = ".lookup 8.8.8.8"
+
+def whois_host(phenny, input):
+	if whois_available:
+		domain = input.group(2)
+		print domain
+		result = pythonwhois.whois(domain)
+		
+		if result is not None:
+			if result['registrar'] is None and result['creation_date'] is None and result['expiration_date'] is None and result['name_servers'] is None:
+				phenny.say("The domain \x0304%s\x03 does not seem to exist." % domain)
+			else:
+				if result['registrar'] is None:
+					result['registrar'] = ["unknown registrar"]
+				
+				if result['creation_date'] is None:
+					creation_date = "unknown"
+				else:
+					creation_date = result['creation_date'][0].isoformat()
+				
+				if result['expiration_date'] is None:
+					expiration_date = "unknown"
+				else:
+					expiration_date = result['expiration_date'][0].isoformat()
+				
+				if result['name_servers'] is None:
+					nameservers = "not available"
+				else:
+					nameservers = ", ".join(result['name_servers'])
+					
+				if result['emails'] is None:
+					emails = "not available"
+				else:
+					emails = ", ".join(result['emails'])
+				
+				phenny.say("Domain \x0304%s\x03, registered on \x0304%s\x03 via \x0304%s\x03, expires on \x0304%s\x03, nameservers are \x0304%s\x03, contact e-mails are \x0304%s\x03" % (domain, creation_date, result['registrar'][0], expiration_date, nameservers, emails))
+	else:
+		phenny.say("The pythonwhois module was not found. You will need it to use the .whois command. Run 'pip install pythonwhois' from a root shell to install the module.")
+	
+whois_host.commands = ['whois']
+whois_host.priority = 'high'
+whois_host.example = ".whois cryto.net"
