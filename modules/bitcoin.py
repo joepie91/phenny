@@ -16,7 +16,7 @@ def getrate(phenny, input):
 	response = requests.get("http://blockchain.info/ticker")
 	data = json.loads(response.text)
 	
-	phenny.say("$1 = %.2f BTC, €1 = %.2f BTC" % (data["USD"]["15m"], data["EUR"]["15m"]))
+	phenny.say("1 BTC = $%.2f, 1 BTC = €%.2f" % (data["USD"]["15m"], data["EUR"]["15m"]))
 	
 getrate.commands = ['bitcoin']
 getrate.priority = 'high'
