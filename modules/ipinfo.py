@@ -164,7 +164,7 @@ def whois_host(phenny, input):
 	if whois_available:
 		domain = input.group(2)
 		print domain
-		result = pythonwhois.whois(domain)
+		raw, result = pythonwhois.whois(domain)
 		
 		if result is not None:
 			if result['registrar'] is None and result['creation_date'] is None and result['expiration_date'] is None and result['name_servers'] is None:
