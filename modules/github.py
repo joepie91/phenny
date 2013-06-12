@@ -10,7 +10,12 @@ donate something, even if just a little, have a look on my donation page
 over at http://cryto.net/~joepie91/donate.html - Thanks!
 """
 
-import time, re, threading, json, urllib, dateutil.parser
+import time, re, threading, json, urllib
+
+try:
+	import dateutil.parser
+except ImportError, e:
+	print "Could not import dateutil.parser, install python-dateutil or the GitHub watcher will not work!"
 
 watcher_started = False
 
