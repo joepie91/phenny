@@ -83,6 +83,8 @@ def start_github(phenny, input):
 		t.start()
 		watcher_started = True
 		phenny.say("Now watching GitHub.")
+	else:
+		phenny.say("Already watching GitHub.")
 	
 start_github.commands = ['startgh']
 start_github.priority = 'medium'
