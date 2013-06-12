@@ -63,6 +63,7 @@ class GithubWatcher(threading.Thread):
 		while True:
 			top_timestamp = 0
 			data = parse_github_feed(self.url)
+			data.reverse()
 			
 			for entry in data:
 				stamp = time.mktime(entry['timestamp'])
