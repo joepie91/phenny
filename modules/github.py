@@ -26,6 +26,7 @@ def parse_github_feed(url):
 	
 	for entry in feed.entries:
 		commits = [commit.strip() for commit in re.findall("<blockquote>(.*?)<\/blockquote>", entry.summary, re.DOTALL)]
+		commits.reverse() 
 		
 		if len(commits) == 0:
 			commits = [entry.title]
