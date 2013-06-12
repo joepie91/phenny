@@ -10,31 +10,24 @@ donate something, even if just a little, have a look on my donation page
 over at http://cryto.net/~joepie91/donate.html - Thanks!
 """
 
-import time, re, threading
-
-try:
-	import feedparser
-except ImportError, e:
-	print "WARNING: feedparser module not found, GitHub watcher will not work!"
+import time, re, threading, json, urllib, dateutil.parser
 
 watcher_started = False
 
 def parse_github_feed(url):
 	entries = []
 	
-	feed = feedparser.parse(url)
+	feed = json.load(urllib.urlopen(url))
 	
-	for entry in feed.entries:
-		commits = [commit.strip() for commit in re.findall("<blockquote>(.*?)<\/blockquote>", entry.summary, re.DOTALL)]
-		commits.reverse() 
+	for entry in feed:
+		try:
+			commits = [commit[2] for commit in entry['payload']['shas']]
+		except KeyError, e:
+			continue
 		
-		if len(commits) == 0:
-			commits = [entry.title]
-		
-		link_match = re.search("\/([^/]+)\/([^/]+)\/compare", entry.link)
-		user = link_match.group(1)
-		repo = link_match.group(2)
-		date = entry.published_parsed
+		user = entry['actor']
+		repo = entry['repository']['name']
+		date = dateutil.parser.parse(entry['created_at']).timetuple()
 		
 		entries.append({
 			"user": user,
@@ -47,7 +40,7 @@ def parse_github_feed(url):
 
 class GithubWatcher(threading.Thread):
 	def __init__(self, username, phenny):
-		self.url = "https://github.com/%s.atom" % username
+		self.url = "https://github.com/%s.json" % username
 		self.last_timestamp = 0
 		self.phenny = phenny
 		
