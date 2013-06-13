@@ -10,7 +10,7 @@ donate something, even if just a little, have a look on my donation page
 over at http://cryto.net/~joepie91/donate.html - Thanks!
 """
 
-import time, re, threading, json, urllib
+import time, re, threading, json, urllib, sys
 
 try:
 	import dateutil.parser
@@ -60,7 +60,15 @@ class GithubWatcher(threading.Thread):
 	def run(self):
 		while True:
 			top_timestamp = 0
-			data = parse_github_feed(self.url)
+			
+			try:
+				data = parse_github_feed(self.url)
+			except Exception, e:
+				# Back off
+				sys.stderr.write("WARNING: Something went wrong! %s" % repr(e))
+				time.sleep(120)
+				continue
+				
 			data.reverse()
 			
 			for entry in data:
