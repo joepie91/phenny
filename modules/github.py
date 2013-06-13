@@ -82,7 +82,7 @@ class GithubWatcher(threading.Thread):
 				stamp = time.mktime(entry['timestamp'])
 				if stamp > self.last_timestamp:
 					commits = ", ".join([u"'\u000302%s\u000f'" % commit for commit in entry['commits']])
-					self.phenny.say(u"\u000304%s\u000f made %s commit(s) to \u0002\u000303%s\u000f on branch u0002\u000303%s\u000f: %s" % (entry['user'], len(entry['commits']), entry['repository'], entry['branch'], commits))
+					self.phenny.say(u"\u000304%s\u000f made %s commit(s) to \u0002\u000303%s\u000f on branch \u0002\u000310%s\u000f: %s" % (entry['user'], len(entry['commits']), entry['repository'], entry['branch'], commits))
 					if stamp > top_timestamp:
 						top_timestamp = stamp
 						
