@@ -32,7 +32,12 @@ def parse_github_feed(url):
 		
 		user = entry['actor']
 		repo = entry['repository']['name']
-		branch = entry['payload']['ref'].replace("refs/heads/", "")
+		
+		try:
+			branch = entry['payload']['ref'].replace("refs/heads/", "")
+		except Exception, e:
+			branch = "?"
+			
 		date = dateutil.parser.parse(entry['created_at']).timetuple()
 		
 		entries.append({
