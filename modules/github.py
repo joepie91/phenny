@@ -32,11 +32,13 @@ def parse_github_feed(url):
 		
 		user = entry['actor']
 		repo = entry['repository']['name']
+		branch = entry['payload']['ref'].replace("refs/heads/", "")
 		date = dateutil.parser.parse(entry['created_at']).timetuple()
 		
 		entries.append({
 			"user": user,
 			"repository": repo,
+			"branch": branch,
 			"timestamp": date,
 			"commits": commits	
 		})
@@ -75,7 +77,7 @@ class GithubWatcher(threading.Thread):
 				stamp = time.mktime(entry['timestamp'])
 				if stamp > self.last_timestamp:
 					commits = ", ".join([u"'\u000302%s\u000f'" % commit for commit in entry['commits']])
-					self.phenny.say(u"\u000304%s\u000f made %s commit(s) to \u0002\u000303%s\u000f: %s" % (entry['user'], len(entry['commits']), entry['repository'], commits))
+					self.phenny.say(u"\u000304%s\u000f made %s commit(s) to \u0002\u000303%s\u000f on branch u0002\u000303%s\u000f: %s" % (entry['user'], len(entry['commits']), entry['repository'], entry['branch'], commits))
 					if stamp > top_timestamp:
 						top_timestamp = stamp
 						
