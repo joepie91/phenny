@@ -123,6 +123,8 @@ def bing_search(query, lang='en-GB'):
 def bing(phenny, input): 
    """Queries Bing for the specified input."""
    query = input.group(2)
+   if not query:
+      return phenny.reply('.bing what?')
    if query.startswith(':'): 
       lang, query = query.split(' ', 1)
       lang = lang[1:]
