@@ -18,6 +18,20 @@ except ImportError, e:
 	print "Could not import dateutil.parser, install python-dateutil or the GitHub watcher will not work!"
 
 watcher_started = False
+watched_users = []
+
+def update_config():
+	global watched_users
+	json.dump(watched_users, open("gh_watched.json", "w"))
+	
+def read_config():
+	global watched_users
+	try:
+		watched_users = json.load(open("gh_watched.json", "r"))
+	except Exception, e:
+		pass
+	
+read_config()
 
 def parse_github_feed(url):
 	entries = []
@@ -25,6 +39,7 @@ def parse_github_feed(url):
 	feed = json.load(urllib.urlopen(url))
 	
 	for entry in feed:
+		print entry
 		try:
 			commits = [commit[2] for commit in entry['payload']['shas']]
 		except KeyError, e:
@@ -94,16 +109,41 @@ class GithubWatcher(threading.Thread):
 			time.sleep(30)
 
 def start_github(phenny, input):
-	global watcher_started
+	global watcher_started, watched_users
 	
 	if watcher_started == False:
-		t = GithubWatcher("joepie91", phenny)
-		t.start()
+		for user in watched_users:
+			t = GithubWatcher(user, phenny)
+			t.start()
 		watcher_started = True
-		phenny.say("Now watching GitHub.")
+		phenny.say("Now watching GitHub for users %s." % (", ".join(watched_users)))
 	else:
 		phenny.say("Already watching GitHub.")
 	
 start_github.commands = ['startgh']
 start_github.priority = 'medium'
 start_github.example = ".startgh"
+
+def add_github(phenny, input):
+	global watched_users
+	
+	if len(watched_users) > 5:
+		# Really basic way to prevent people from spamming non-existent account watch requests.
+		return phenny.reply("Maximum amount of watchable accounts reached.")
+	
+	user = input.group(2)
+	
+	if not user:
+		return phenny.reply("No user specified.")
+	
+	phenny.say("User %s is now being watched." % user)
+		
+	watched_users.append(user)
+	t = GithubWatcher(user, phenny)
+	t.start()
+	
+	update_config()
+
+add_github.commands = ['addgh']
+add_github.priority = 'medium'
+add_github.example = ".addgh"
