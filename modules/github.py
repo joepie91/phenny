@@ -39,7 +39,6 @@ def parse_github_feed(url):
 	feed = json.load(urllib.urlopen(url))
 	
 	for entry in feed:
-		print entry
 		try:
 			commits = [commit[2] for commit in entry['payload']['shas']]
 		except KeyError, e:
