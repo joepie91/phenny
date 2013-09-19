@@ -77,6 +77,10 @@ ping.example = ".ping cryto.net"
 def lookup(phenny, input):
 	host = input.group(2)
 	
+	if host.startswith("-"):
+		phenny.say("Invalid host.")
+		return False
+	
 	if re.match("[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", host):
 		try:
 			ip = host
