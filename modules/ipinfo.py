@@ -80,7 +80,7 @@ def lookup(phenny, input):
 	if re.match("[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", host):
 		try:
 			ip = host
-			data = json.loads(urllib.urlopen("http://ip-api.com/json/%s/?fields=country,countryCode,regionName,city,lat,lon,isp,org,as,reverse,status,message" % ip).read())
+			data = json.loads(urllib.urlopen("http://ip-api.com/json/%s?fields=country,countryCode,regionName,city,lat,lon,isp,org,as,reverse,status,message" % ip).read())
 			
 			if data['status'] == "success":
 				if data['as'] == None:
