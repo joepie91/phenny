@@ -41,6 +41,7 @@ def read_tweet(url):
 
    for text in r_p.findall(bytes):
       text = expand(text)
+      text = text.replace("&#10;", "\n") # Replace new Twitter newlines with actual newlines
       text = r_tag.sub('', text)
       text = text.strip()
       text = r_whiteline.sub(' ', text)
