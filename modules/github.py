@@ -45,7 +45,13 @@ def parse_github_feed(url):
 			continue
 		
 		user = entry['actor']
-		repo = entry['repository']['name']
+		
+		try:
+			repo = entry['repository']['name']
+		except KeyError, e:
+			# Not a repository event?
+			continue
+			
 		url = entry['url']
 		
 		try:
