@@ -13,7 +13,7 @@ over at http://cryto.net/~joepie91/donate.html - Thanks!
 import requests, json
 
 def welcome(phenny, input):
-	phenny.say("%s: welcome to %s! Please be aware that this channel is publicly logged, and make sure to read the rules in the channel topic. You may hide messages from the public logs by prefixing them with [off]." % (input.group(1), input.sender))
+	phenny.say("%s: welcome to %s! Please be aware that this channel is publicly logged, and make sure to read the rules in the channel topic. You may hide messages from the public logs by prefixing them with [off]." % (input.group(2), input.sender))
 	
 welcome.commands = ['welcome']
 welcome.priority = 'high'
