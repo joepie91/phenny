@@ -167,37 +167,61 @@ lookup.example = ".lookup 8.8.8.8"
 def whois_host(phenny, input):
 	if whois_available:
 		domain = input.group(2)
-		print domain
-		raw, result = pythonwhois.whois(domain)
+		result = pythonwhois.get_whois(domain, normalized=True)
 		
 		if result is not None:
-			if result['registrar'] is None and result['creation_date'] is None and result['expiration_date'] is None and result['name_servers'] is None:
+			if 'registrar' not in result and 'creation_date' not in result and 'expiration_date' not in result and 'name_servers' not in result:
 				phenny.say("The domain \x0304%s\x03 does not seem to exist." % domain)
 			else:
-				if result['registrar'] is None:
-					result['registrar'] = ["unknown registrar"]
+				try:
+					registrar = result["registrar"][0]
+				except KeyError, e:
+					registrar = "unknown registrar"
 				
-				if result['creation_date'] is None:
-					creation_date = "unknown"
-				else:
+				try:
 					creation_date = result['creation_date'][0].isoformat()
+				except KeyError, e:
+					creation_date = "unknown"
 				
-				if result['expiration_date'] is None:
-					expiration_date = "unknown"
-				else:
+				try:
 					expiration_date = result['expiration_date'][0].isoformat()
+				except KeyError, e:
+					expiration_date = "unknown"
 				
-				if result['name_servers'] is None:
+				try:
+					holder = "%s (%s)" % (result["contacts"]["registrant"]["name"], result["contacts"]["registrant"]["organization"])
+				except KeyError, e:
+					try:
+						holder = result["contacts"]["registrant"]["name"]
+					except KeyError, e:
+						try:
+							holder = result["contacts"]["registrant"]["organization"]
+						except KeyError, e:
+							holder = "unknown"
+				
+				try:
+					nameservers = ", ".join(result['nameservers'])
+				except KeyError, e:
 					nameservers = "not available"
-				else:
-					nameservers = ", ".join(result['name_servers'])
 					
-				if result['emails'] is None:
-					emails = "not available"
-				else:
-					emails = ", ".join(result['emails'])
-				
-				phenny.say("Domain \x0304%s\x03, registered on \x0304%s\x03 via \x0304%s\x03, expires on \x0304%s\x03, nameservers are \x0304%s\x03, contact e-mails are \x0304%s\x03" % (domain, creation_date, result['registrar'][0], expiration_date, nameservers, emails))
+				try:
+					emails = result["contacts"]["registrant"]["email"]
+				except KeyError, e:
+					try:
+						emails = ", ".join(result['emails'])
+					except KeyError, e:
+						try:
+							email_list = []
+							for type_, contact in result["contacts"].items():
+								try:
+									email_list.append(contact["email"])
+								except KeyError, e:
+									pass
+							emails = ", ".join(email_list)
+						except KeyError, e:
+							emails = "not available"
+					
+				phenny.say("Domain \x0304%s\x03, registered on \x0304%s\x03 by \x0304%s\x03 via \x0304%s\x03, expires on \x0304%s\x03, nameservers are \x0304%s\x03, contact e-mails are \x0304%s\x03" % (domain, creation_date, holder, registrar, expiration_date, nameservers, emails))
 	else:
 		phenny.say("The pythonwhois module was not found. You will need it to use the .whois command. Run 'pip install pythonwhois' from a root shell to install the module.")
 	
