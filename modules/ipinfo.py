@@ -170,7 +170,7 @@ def whois_host(phenny, input):
 		result = pythonwhois.get_whois(domain, normalized=True)
 		
 		if result is not None:
-			if 'registrar' not in result and 'creation_date' not in result and 'expiration_date' not in result and 'name_servers' not in result:
+			if len(result) <= 2:
 				phenny.say("The domain \x0304%s\x03 does not seem to exist." % domain)
 			else:
 				try:
