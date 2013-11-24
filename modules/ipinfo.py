@@ -215,7 +215,7 @@ def whois_host(phenny, input):
 							for type_, contact in result["contacts"].items():
 								try:
 									email_list.append(contact["email"])
-								except KeyError, e:
+								except Exception, e:
 									pass
 							emails = ", ".join(email_list)
 						except KeyError, e:
