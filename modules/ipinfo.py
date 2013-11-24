@@ -190,13 +190,13 @@ def whois_host(phenny, input):
 				
 				try:
 					holder = "%s (%s)" % (result["contacts"]["registrant"]["name"], result["contacts"]["registrant"]["organization"])
-				except KeyError, e:
+				except Exception, e:
 					try:
 						holder = result["contacts"]["registrant"]["name"]
-					except KeyError, e:
+					except Exception, e:
 						try:
 							holder = result["contacts"]["registrant"]["organization"]
-						except KeyError, e:
+						except Exception, e:
 							holder = "unknown"
 				
 				try:
@@ -206,7 +206,7 @@ def whois_host(phenny, input):
 					
 				try:
 					emails = result["contacts"]["registrant"]["email"]
-				except KeyError, e:
+				except Exception, e:
 					try:
 						emails = ", ".join(result['emails'])
 					except KeyError, e:
