@@ -237,7 +237,7 @@ def traceroute(phenny, input):
 			# Hacky way to prevent fuckery with command-line arguments
 			raise Exception("Invalid host")
 		
-		mtr = subprocess.Popen(["mtr", "--report", host], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+		mtr = subprocess.Popen(["mtr", "--report", "--report-wide", host], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 		out, error = mtr.communicate()
 		
 		response = requests.post("http://sprunge.us", data={"sprunge": out})
