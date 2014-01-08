@@ -10,7 +10,7 @@ donate something, even if just a little, have a look on my donation page
 over at http://cryto.net/~joepie91/donate.html - Thanks!
 """
 
-import subprocess, json, urllib, re, sys
+import subprocess, json, urllib, re, sys, requests
 
 try:
 	import pythonwhois
@@ -228,3 +228,23 @@ def whois_host(phenny, input):
 whois_host.commands = ['whois']
 whois_host.priority = 'high'
 whois_host.example = ".whois cryto.net"
+
+def traceroute(phenny, input):
+	try:
+		host = input.group(2)
+		
+		if host.startswith("-"):
+			# Hacky way to prevent fuckery with command-line arguments
+			raise Exception("Invalid host")
+		
+		mtr = subprocess.Popen(["mtr", "--report", host], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+		out, error = mtr.communicate()
+		
+		response = requests.post("http://sprunge.us", data={"sprunge": out})
+		phenny.reply(response.text)
+	except Exception, e:
+		phenny.say("Traceroute failed. %s" % e)
+
+traceroute.commands = ["mtr", "traceroute"]
+traceroute.priority = "high"
+traceroute.example = ".traceroute cryto.net"
